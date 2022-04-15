@@ -1,0 +1,143 @@
+1. 需求:
+
+输入:对于/config文件夹下的front-end文件夹下的若干.page 文件和若干<name>.expose.ts，默认模板下会带一个app.page和global.expose.ts
+最后所有的<name>.expose.ts在global.expose.ts中引入 import _ from 'xx'
+之后即可生效
+
+具体内容:
+.json文件中将要包含 
+1.路由信息( 以<name>.json为范例 router-name = name )
+2.setup处理信息(在这里可以自由的使用js语法 同时会对带有meta标记的变量进行替换)
+
+	meta标记: 实际上就是potato预处理时使用的标记 可以定义 变量 和 函数 
+	关于变量和函数的声明形式: 在global-config.ts中
+		defPRI代表定义一个预导入
+		defSEC代表生成一个硬插入段落 这个段落会直接被生成在set-up逻辑中
+		defTPL代表生成一个模板 往其中输入参数会生成响应的模板变量
+		调用方法也是类似 #tplFn( myName, #tck ) 
+		可以发现 #tplFn中传入的参数也是可以使用#tck这样的potato变量的
+		
+		defPRI 的第一个参数是preInclude:Array第二个参数是具有一个参数的函				数，传入的函数是它的第一个参数，也就是preInclude:Array，第二参数将在编			译时被调用，作为副作用，可以选择不定义
+	
+		defSec和defTpl都具有3个参数: sec/tpl标识符|名字,变量含义体(即本身的定			义) 和 preInclude(需要预加载的import语句-- 将不会对import语句进行校验)
+		
+		如果第一个参数为null|undefined 它们都将被视作单纯引入preInclude的过程
+		
+		关于import语句,针对的是page本身的路径而言,所以算是硬插值,
+		但是开放一个代表src的语法糖@, 这个@将在预编译时自动被定义为page所在路径
+
+		在我们的template中 不再使用<></>的标签式语法
+		而使用函数式的声明 如声明App组件:
+		/** age = 32 */
+		p("App")( { age: _age，$onClick: "clickHandler" } )( "hello" )
+		将会生成:	
+			<App :name="32", onClick="clickHandler"> hello </App>
+		
+		注意: 如果需要绑定变量 则以$开头 且后续需要传入 <变量名的字符串>
+		
+	/** deprecated: 编译器将不再使用meta-expose机制 */
+	关于meta-expose引入: 无论是否在preInclude中使用过该引入
+	最后都会生成import * from __META_EXPOSE__ from '@/.potato/meta-expose.ts';
+	这也意味着__META_EXPOSE__这个变量需要被保留 不能被别的变量名占用
+	
+3. 关于<set-up></set-up> 和 <view></view> 字段 
+	
+	set-up字段内的内容都会被处理为预处理set-up逻辑 可以有多个set-up段落
+	preInclude和在上一段定义的逻辑都是可用的
+
+	view字段也可以被拆成多段 它代表的是模板逻辑即形如:
+	App( { age: _age，$onClick: "clickHandler" } )( "hello" )
+	最后的view字段是所有这些view字段的拼接和
+
+4. 注意 potato-compiler 生成的是<扁平化>多页面应用 这也意味着不会产生类似嵌套路由这样的东西，在没有额外配置或是自己编写的情况下
+
+5. 关于特殊插件，这是在生成/config/front-end/global-expose.ts之前也就是非运行时（编译时）使用的， 它可以按照额外配置(如operation生成的接口对象)帮助你预先加入一些必要的potato变量，你可以在此基础上扩展你的expose
+
+
+/***************************************************************************/
+
+2.实现方针
+
+1.初步理解:
+	1. 关于实现 global-config.ts 这个文件需要在引入{defPr,...} 这些特殊方法的	情况下才能起作用，这个文件在*编译阶段 是不会被引入的，事实上，这些方法的作用	在于作为一个入口，用于把所需要的token导入内存中(一个存储变量)
+	
+	所以 实现global-config.ts的核心就是要实现defPr..这些函数和相应的token存	储机制 这个token存储器将被命名为 potato-token-collector.ts 具备收集依赖的功	能 利用导出的函数来收集依赖 并且给接下来的编译存储信息
+	
+	2. 关于编译阶段的先后顺序和插件问题
+	显然 midEngine的启动应当在potatoEngine之前 midEngine需要提供额外的副作用来	帮助 potatoEngine生成所需要的插件( 事实上:没有必要再做一次IO ) 所以这种情况	下 midEngine需要进行改动，添加一个可用的副作用列表，来在生成model,operation	的情况下将这些信息导出用于新的计算 
+	
+	那么还需要用于根据operation生成插件的工具 这部分可以放在末尾进行 定义在	potatoEngine同目录下的yieldPlugin.ts下 之后或将根据读取的potato-meta进行
+	额外的插件生成，用来提供routerPlugin(生成路由变量和路由控制器)
+	
+	3. 编译产物和存储目录
+
+		1.	src目录下pages目录用于存放所用的vue文件
+		2.	在上述步骤之后 生成一个router.ts 然后在app.ts中引用
+		这一步其实只需生成router.ts，只不过要对现有的app.ts进行改动
+	
+	4. util的改进
+		1. 新增existOrMkdir以在存在输入目录的情况下避免覆盖	
+
+3. 实现问题:
+	1.	读取和预编译.page文件的问题
+	在读取.page文件后 需要对<setup>和<view>内容进行区分
+	所要得到的无非是一个累加器的功能 把所有的setup内容加上 + \n +
+	后连接起来
+	预编译阶段 使用正则表达式对#部进行编译 不过需要注意的是
+	对于Sec和Tpl的处理是不同的,sec的话只需同步进行转译，然后tpl的话
+	得在所有的sec都处理完了之后才行 那么的话其实就比较简单了
+	分2阶段处理#号 一阶段处理后的产物交给2阶段处理 这时在对tpl的内容进行处理
+	2阶段得使用tpl专用的正则表达式进行处理( #<tpl>( a, b, c... ) )	
+
+	2. 关于sec和tpl要生成什么，如何生成
+	sec的话只需进行替换即可 replace => return
+	而tpl的话需要先找出参数 然后再把参数传入生成函数中去 将生成的字符串传回去	return 所以tpl函数第一个参数的形式/Type应当是(...arg:string) => string
+	
+	3. 关于sec和tpl的解析规则
+	sec和tpl声明或使用起来和一般的js变量/函数没有什么区别
+	sec的话只需要是let a = #ROUTER_LOGIN
+	而tpl的话需要考虑到参数列表带空格的情况 所以中断的办法应当是\n或;
+	#<tpl>*(a, b,    c);
+	这种还是比较好实现的 \n|;$ 结尾就行
+	
+	4. 关于view的解析
+	这一部其实只要实现"p"函数然后再定义一下try...catch即可
+	因为eval的过程中有可能出错 
+	p函数实现在view解析器里即可 作用是解析完语句然后累加到生成语句中去
+	<template></template>
+	
+	5. 关于第一步准备配置的插件
+		1.operationPlugin 用于生成request模板函数 如RequestLogin:sec
+		2.routerPlugin 由前一步解析得到的router信息进行解析和生成
+		得到router的有关def(跳转函数和路径常量)
+		3.sceneUIPlugin 用于引入scene-ui的相应组件(PRI)
+	
+	6. 关于文件结构和目录
+xx_config/
+	front-end/
+		<>.expose.ts
+		<>.page	
+template_repo/
+	src/
+	/** 这个目录可以existOrMkdir */
+		/pages/
+
+	而potato和mid是同目录的编辑器
+	
+	
+	7. 主要的任务分隔
+	
+	---- 解析篇 ----
+	0. 生成engine和potato文件夹
+	1. Token类型的定义和格式(preInclude: Array<string>, variable: [{ type: "SEC" | "TPL", ... }] )	
+	2. import global.expose.ts 路径 --创建函数defPRI defSEC.. 声明exposeToken和	getExposeToken( potato/potato-token-collector.ts ) ++ token可标注private 
+	3. 经过依赖收集 已经拥有了token数据 采用getToken()注入对.page的处理方法
+	4. 解析目录 并传回需要的 .page路径(.expose.ts直接采取引入的形式 故不用解析)
+	5. 创建一个根据page名得到相应生成物page路径的方法
+	5. 定义writeToPages方法(outputPath, rawPage) 它的作用使用	pageGenerator.boot( rawPage, token )
+	生成相应的字符串 然后写入路径Path
+	6. 根据pageRaw信息进行解析的方法的实现 并生成对TPL和sec的解析
+	以及解析view数据的p函数的实现(拼接)
+
+	---- 插件篇 ----
+	生成三个依赖插件 sceneUIPlugin requestPlugin<=operation routerPlugin<=path

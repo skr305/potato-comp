@@ -8,9 +8,6 @@
     "rpw": "nodemon --watch ./src -e ts --exec npm run rp",
     "c-ini": "cnpm i && cd repo-template && cnpm i",
     "ini": "npm i && cd repo-template && npm i",
-    
-
-
     "d-s": "npm run rd && cd repo-template && npm run run-s "
   },
   "dependencies": {
