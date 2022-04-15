@@ -1,5 +1,5 @@
 deprecated
 node_modules
-./.vscode
-./todo
-./dist
+.vscode
+*/**/todo
+*/**/dist
