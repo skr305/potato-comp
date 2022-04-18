@@ -1,0 +1,20 @@
+1. 给依赖收集器加上变量标识符存在判断
+如果已经存在在sec/tpl中了
+那么就会报错 不会正常加入( 加入一个warning 然后异常 ) √
+
+2. 增加新功能 potatoInnerPlugin， 它的作用是生成一段logic并插入到
+rawPage当中去 然后使得可以提前定义一些如 __loginRequest, __getSession这样的逻辑
+为此需要改造writeToPage和getPageStringWithToken， 它们都需要新增一个参数
+innerPlugins:StringGeneratorWithNoArgs[] <- it's a array! √
+
+引申!=> __loginRequest 只是简单的请求方法 而我们的场景组件是解耦的 所以需要额外配置
+一个__loginPured = ( {  }<param> ) => 
+__loginRequest.then( res => res.data ).catch( e => console.error(e) ) 
+
+3. 增加对preInclude中 @标识符的转化 @="../"; 
+
+4. 在土豆编译器中补上preInclude部分 创立一个处理token中preInclude(对首字符为@的进行变更)并concat形成一个大字符串的方法
+调用时机的话在getPageStringWithToken的返回字符串部分 logic的最顶端 √
+
+5. 增加一个cp函数(用于生成子项的p p的逻辑是注入到上下文的全局字符串里去 cp和p功能类似 只是返回字符串 而不注入
+p可以复用cp的逻辑 两个函数同时声明在上下文里)

@@ -16,6 +16,14 @@ export const stdWriteFilePush = ( path: string, content: string ) => stdWriteFil
 export const stdMkdir = ( path: string, options: fs.MakeDirectoryOptions = { "recursive": true } ) => {
     return fs.promises.mkdir( path, options );
 };
+export const stdExistOrMkdir = async ( path: string, options: fs.MakeDirectoryOptions = { "recursive": true }  ) => {
+    try {
+        await fs.promises.stat( path );
+    } catch ( e ) {
+        // 不存在文件夹，直接创建 {recursive: true} 这个配置项是配置自动创建多个文件夹
+        await fs.promises.mkdir( path, options );
+    }
+ }
 // like rm -rf
 export const stdRmRf = ( path: string, options: fs.RmOptions = {} ) => {
     return fs.promises.rm( path, { recursive: true, force: true, ...options } );

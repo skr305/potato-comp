@@ -46,7 +46,7 @@
 	preInclude和在上一段定义的逻辑都是可用的
 
 	view字段也可以被拆成多段 它代表的是模板逻辑即形如:
-	App( { age: _age，$onClick: "clickHandler" } )( "hello" )
+	p("App")( { age: '_age'，$onClick: "clickHandler" } )( "hello" )
 	最后的view字段是所有这些view字段的拼接和
 
 4. 注意 potato-compiler 生成的是<扁平化>多页面应用 这也意味着不会产生类似嵌套路由这样的东西，在没有额外配置或是自己编写的情况下
@@ -113,10 +113,13 @@
 		3.sceneUIPlugin 用于引入scene-ui的相应组件(PRI)
 	
 	6. 关于文件结构和目录
-xx_config/
+lc_config/
+	model.json
+	operation.json
 	front-end/
 		<>.expose.ts
-		<>.page	
+		<>.page
+		global.expose.ts	
 template_repo/
 	src/
 	/** 这个目录可以existOrMkdir */
