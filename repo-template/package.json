@@ -12,7 +12,7 @@
     "run-dw": "cd server && nodemon --watch ./ -e ts,d.ts --exec npm run run-d"
   },
   "dependencies": {
-    "scene-ui": "^0.2.0",
+    "scene-ui": "^0.4.1",
     "@koa/cors": "^3.2.0",
     "@koa/router": "^10.1.1",
     "@types/axios": "^0.14.0",

@@ -1,0 +1,8 @@
+<logic>
+    const username = "";
+    const password = "";
+    #loginPured( { username, password } );
+</logic>
+<view>
+    <div></div>
+</view>

@@ -7,6 +7,6 @@ const boot = async () => {
         return;
     }
     const standardToPath = resolve( toPath );
-    await fileDrag( __dirname + "/../low-c", standardToPath, [ "node_modules" ] );
+    await fileDrag( __dirname + "/../potato-comp", standardToPath, [ "node_modules" ] );
 };
 boot();

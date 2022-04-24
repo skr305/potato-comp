@@ -1,0 +1,6 @@
+1.需要把前端router自动生成这一段给加上 具体方式为
+得到所有page信息 进行相应的路径补全
+放到main.ts里头配置
+这个东西也可以写成一个插件
+router-config.plugin
+这个要加上一个getter

@@ -16,6 +16,8 @@ export type ${ cp }Params = ${ p };                `
                 result += `
 export type ${ cp }Response = ${ r };                `
             }
+            result += `
+export const ${cp}ApiPath = '/api/${fp.toLowerCase()}/${ cp.toLowerCase() };'    `
         } );
     } );
     return result;

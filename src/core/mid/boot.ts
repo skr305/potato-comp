@@ -19,6 +19,13 @@ export enum MidGeneratorStatus {
     UNKNOWN_ERROR = 99,
     APP_ERROR = 100
 };
+export type MidGeneratorYieldType = {
+    status: MidGeneratorStatus,
+    operationNameSets: {
+        "Auth": string[],
+        "Unauth": string[]
+    }
+};
 export interface MidGOptions {
     output: string;
 }
@@ -35,11 +42,28 @@ const DEFAULT_MIDG_OPTIONS = {
 /**
  * @param path config.json's path 
  */
-export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOptions = DEFAULT_MIDG_OPTIONS ):Promise<MidGeneratorStatus> => {
+export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOptions = DEFAULT_MIDG_OPTIONS ):Promise<MidGeneratorYieldType> => {
+    let operationNameSets = {
+        "Auth": [] as string[],
+        "Unauth": [] as string[]
+    };
     try {
         // make dist output dir
         const configBody = await jsonReader( path.model ) as MidConfigType;
         const operationBody = await jsonReader( path.operation ) as OperationBlock;
+        operationNameSets = ( ( function() {
+            const sets = {
+                "Auth": [] as string[],
+                "Unauth": [] as string[]
+            };
+            if( operationBody.Api.Auth ) {
+                sets[ "Auth" ].push( ...Object.keys( operationBody.Api.Auth ) );
+            }
+            if( operationBody.Api.Unauth ) {
+                sets[ "Unauth" ].push( ...Object.keys( operationBody.Api.Unauth ) );
+            }
+            return sets;
+        } )() );
         // 
         const OUT_DIR = options.output;
         await stdMkdir( OUT_DIR );
@@ -83,12 +107,21 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
             throw error;
         }
         if( error instanceof BaseError ) {
-            return MidGeneratorStatus.APP_ERROR;
+            return {
+               status: MidGeneratorStatus.APP_ERROR,
+               operationNameSets
+            };
         }
         console.error( error );
-        return MidGeneratorStatus.UNKNOWN_ERROR;
+        return {
+            status: MidGeneratorStatus.UNKNOWN_ERROR,
+            operationNameSets
+        };
         
     }
-    return MidGeneratorStatus.SUC;
+    return  {
+        status: MidGeneratorStatus.SUC,
+        operationNameSets
+    } ;
 };
 export default BootGen;

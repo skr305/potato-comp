@@ -1,5 +1,5 @@
 export type PotatoExposeType = "PRI" | "SEC" | "TPL" | "NONE";
-export type PotatoExposeTPLFunctionAlias = ( ...args: string[] ) => string;
+export type PotatoExposeTPLFunctionAlias = ( args: string ) => string;
 export type PotatoTokenCollectorStoreType = PotatoExposeCompiledToken[];
 export interface PotatoExposeCompiledToken {
     type: PotatoExposeType;

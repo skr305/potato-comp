@@ -2,12 +2,14 @@ import { StringGeneratorWithNoArgs } from './../../alias-type';
 import BaseError from "../error/base-error";
 import { stdWriteFileCover } from "../../util/std-write";
 import { PotatoExposeCommonTokenType, PotatoExposeSECToken, PotatoExposeTPLToken, PotatoTokenCollectorStoreType } from "./type";
-import { XLS_ERROR_CODE_SET } from "core/error/error-code";
+import { XLS_ERROR_CODE_SET } from "../error/error-code";
 
 const logicReg = /<logic>([\s\S]*?)<\/logic>/ig;
+const importReg = /<import>([\s\S]*?)<\/import>/ig;
 const viewReg = /<view>([\s\S]*?)<\/view>/ig;
+const viewPotatoFunctionReg = /<#>([\s\S]*?)<\/#>/ig;
 const secReg = /#([_$A-Za-z]\w*)/g;
-const tplReg = /#([_$A-Za-z]\w*)\s*[(](\s*(\S+?)\s*,)*(\s(\S+?)\s)[)]/g;
+const tplReg = /#([_$A-Za-z]\w*)\s*\(([\s\S]*)\)/g;
 const getPageStringWithToken = ( 
     rawPage: string, 
     token: PotatoTokenCollectorStoreType, 
@@ -58,6 +60,32 @@ const getPageStringWithToken = (
         }
         return exposeContent;
     };  
+    // innerPlugins生成的逻辑
+    // 会位于第一段logic段内
+    rawPage =  `
+    <logic>
+    // innerPluginsGenerated
+    /**************/
+    ${ innerPlugins ? 
+        innerPlugins
+        .map( p => {
+            return p();
+        } )
+        .join( "\n" )
+        :""
+    }
+    </logic>
+    `.concat( rawPage );
+
+    // 生成import 逻辑
+    // 会在preIncludes逻辑之后
+    // 它可以在遵循顺序的情况下混写
+    // import 和 常规js 语句
+    let importSets = '';
+    rawPage.replace( importReg ,( v, ...args ) => {
+        importSets += args[0] + '\n';
+        return '';
+    } )
     // 先对 <logic></logic> 内的内容进行一个提取
     // 并且在提取的过程中对变量进行一个转化
     // 且批量记录所有logic内容
@@ -74,17 +102,12 @@ const getPageStringWithToken = (
                 // tpl don't need to be replaced in first stage
                 return v;
             } )
-            .replace( tplReg, ( v, ...args ) => {
+            .replace( tplReg, ( v, ...args: string[] ) => {
                 const identifier = args[0];
                 const exposeContent = getExposeContentOrThrow( identifier );
                 if( exposeContent.type === "TPL" ) {
-                    // get the tplInvokeArgs
-                    const tplInvokeArgs = [];
-                    // remove the idx and origin 
-                    for( let i=2; i<args.length-2; i+=2 ) {
-                        tplInvokeArgs.push( args[i] );
-                    }
-                    return ( exposeContent as PotatoExposeTPLToken ).tpl( ...tplInvokeArgs );
+                    // console.log( ( exposeContent as PotatoExposeTPLToken ).tpl( ...tplInvokeArgs ) )
+                    return ( exposeContent as PotatoExposeTPLToken ).tpl( args[1] );
                 }   
                 // ivk a sec is invalid
                 throw new BaseError( XLS_ERROR_CODE_SET.POTATO_INVALID_INVOKE, `can-not-invoke-a-sec:${ lg[0] }, should-be-tpl ` );
@@ -93,7 +116,9 @@ const getPageStringWithToken = (
 
     /** compile view */
     let totalView = "";
-
+    // the view string of potatoFunction will
+    // be cached here
+    let potatoFunctionGenedCache = '';
     // util function
     const cp  = ( compName: string ) => {
         return ( props ?: { [ key: string ]: string } ) => {
@@ -122,13 +147,24 @@ const getPageStringWithToken = (
     const p = ( compName: string ) => {
         return ( props ?: { [ key: string ]: string } ) => {
             return ( child ?: string ) => {
-                totalView += cp( compName )( props )( child );
+                potatoFunctionGenedCache += cp( compName )( props )( child );
             }
         }
     };
-    for( let vi of rawPage.matchAll( viewReg ) ) {
-        // eval the nested: p("App")({ })();
-        eval( vi[1] );
+
+    {
+        let currentViewer = '';
+        for( let vi of rawPage.matchAll( viewReg ) ) {
+            currentViewer = vi[1].replace( viewPotatoFunctionReg, ( v, ...args ) => {
+                // clear the cache
+                potatoFunctionGenedCache = '';
+                // eval the nested: p("App")({ })();
+                eval( args[0] );
+                return potatoFunctionGenedCache;
+            } ),
+            
+            totalView += currentViewer;
+        }
     }
     // gen the preInclude 
     const logicPreIncludes:string = ( [ 
@@ -138,23 +174,17 @@ const getPageStringWithToken = (
             // the property: preIncludes
             if( t.preIncludes !== undefined 
             || t.preIncludes !== null ) {
-                return t.preIncludes;
+                return t.preIncludes.join( ";\n" );
             }
             return [];
-        } ) 
+        } )
     ] )
     .join("\n");    
     return `
 <script setup lang="ts">
 ${ logicPreIncludes }
-${ innerPlugins ? 
-    innerPlugins
-    .map( p => {
-        return p();
-    } )
-    .join( "\n" )
-    :""
-}
+${ importSets }
+
 ${totalLogic}
 </script>
 <template>

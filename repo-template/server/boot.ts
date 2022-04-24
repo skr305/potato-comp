@@ -7,10 +7,11 @@ import koaErrorHandler from './middlewares/error-handler';
 import koaResponse from './middlewares/response';
 import { initDataSource } from './data-source';
 import chalk from "chalk";
+import PORT from "../src/base-port";
 
 // app config initialize
 const app = new Koa<any, AppContext>();
-const PORT = 9000;
+
 const ROUTER_PATH = "/api";
 
 const boot = async () => {

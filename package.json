@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "rd": "tsc && node ./dist/boot-d.js",
+    "rd": "tsc && node ./dist/src/boot-d.js",
     "rs": "tsc && node ./dist/boot-s.js",
     "rp": "tsc && node ./dist/boot-p.js",
     "rdw": "nodemon --watch ./src -e ts,xld --exec npm run rd",

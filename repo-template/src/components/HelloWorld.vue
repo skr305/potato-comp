@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Todo from './Todo.vue';
-
+import { post } from '../request';
 defineProps<{ msg: string }>()
 
 const count = ref(0)

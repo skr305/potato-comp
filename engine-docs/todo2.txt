@@ -1,3 +1,7 @@
+0. preInclude应当有去重功能 在添加的时候就需要去重
+
+
+/** 非目前主要方向 暂时舍弃 */
 1. potatoEngine本身应该是和上下文以及其它engine解耦的 所以的话
     应该把
         ·插件包
@@ -11,5 +15,51 @@
         .生成位置
     的逻辑本身也当成参数传入进去 
     这样虽然这个方法本身会变得有些难以理解 但是其复用性更强
+
 2. 试写request的potato插件和inner插件 这一整套
 建立在1的基础上编写 也就是插件在potatoEngine的上一级执行
+
+3. 另外还有routerEngine的选项 这部分的话因为需要preInclude
+所以也要是potato和inner一整套的插件
+
+4. sessionEngine的话只有preInclude插件
+
+
+
+二. 实现概览:
+
+1. 首先面对的问题是 是否需要按需把所有的 api.ts  ..引入
+这个的话可以没有问题 import * as __API from '../api.ts' 即可
+这的是一个preInclude
+还有一个preInclude是:
+import request from '../request.ts'
+request使用innerPlugin来构建
+// 这部分是需要结构使用的
+如你所见 难点在于生成参数表
+
+const __LoginPured = async ( username: string,  ) =>  {
+    return request< __API.LoginParams, __API... >
+    ( username, pwd )
+    .then( res => res.data );
+};
+
+2. router的话 使用defTPL这种方式来构建和defSEC
+TPL: ( path:string ) => { return `
+    useRouter( ${ path } )
+` }, preInclude( import { useRouter } from 'vueRouter' )
+
+这个构建SEC的方法也需要path 所以直接写在engine里头 或者写成一个传参器
+这里比较好理解的方式是写成一个可以传参的插件
+不过可以写成( ...args ) => Plugin 这种方式 更好ll
+
+3. sessionPlugin只要额外写一个
+
+
+三.方针
+
+1.对于router而言 需要获取写入一个新的文件, 引入相应的组件
+同时需要设置Path 
+index默认是代表是首页
+那么分为几步
+1.根据path来生成相应的内容
+2.写出
