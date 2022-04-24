@@ -16,18 +16,21 @@ ctx.body = { done: user && user.pwd === ctx.json.pwd };
             
 public static async reg ( ctx: AppContext, next: Next ) {
     let user = await dataSource.manager.findOne( User, { where: { userID: ctx.json.userID,  } } );
-if( !user )
+if( !user ) {
  { 
  const __inserting = new User ();
 __inserting.userID = ctx.json.userID;
 __inserting.userNick = ctx.json.userNick;
 __inserting.pwd = ctx.json.pwd;
 await dataSource.manager.insert( User, __inserting );
-ctx.body = { done: true };
+ 
  } 
  
-else 
-ctx.body = { done: false };
+ctx.body = { done: true };
+}
+else {
+ctx.body = { done: false }
+}
 
     await next();
 };

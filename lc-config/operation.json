@@ -34,11 +34,13 @@
                 "Response": "{done: boolean}",
                 "Program": [
                     "# $user => &User.FindOne|userID=$Params.userID ",
-                    " if( !user )",
+                    " if( !user ) {",
                     "# &User.Insert|userID=$Params.userID|userNick=$Params.userNick|pwd=$Params.pwd ",
-                    " $Return = { done: false };",
-                    "else",
-                    "$Return = { done: true }"
+                    " $Return = { done: true };",
+                    "}",
+                    "else {",
+                    "$Return = { done: false }",
+                    "}"
                 ]
             }
         }
