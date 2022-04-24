@@ -8,11 +8,13 @@ const authRouter = new KoaRouter();
 authRouter.use( koaAppToken );
 const unauthRouter = new KoaRouter();
     
-authRouter.post( '/Login', AuthController.Login ); 
+authRouter.post( '/deleteUser', AuthController.deleteUser ); 
             
-authRouter.post( '/DeleteUser', AuthController.DeleteUser ); 
+authRouter.post( '/insertUser', AuthController.insertUser ); 
             
-authRouter.post( '/InsertUser', AuthController.InsertUser ); 
+unauthRouter.post( '/login', UnauthController.login ); 
+            
+unauthRouter.post( '/reg', UnauthController.reg ); 
             
 const router = new KoaRouter();
 router.use( "/auth", authRouter.routes() );

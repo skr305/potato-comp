@@ -62,8 +62,7 @@ export const OperationGenerator:{ [key in OPERATION_TYPE]: ( base: string, param
             const condi = splitPairSafely( pair );
             // for order use
             if( condi[0][0] === "*" ) {
-                // condi[1]的值可以是 FIND_ORDER_VALUE 中的其中一个
-                orderNested += `${ condi[0].slice( 1 ) }: ${ condi[1] as FIND_ORDER_VALUE }, `;
+                orderNested += `${ condi[0].slice( 1 ) }: ${ condi[1] }, `;
             } else {
                 whereNested += `${condi[0]}: ${condi[1]}, `;
             }

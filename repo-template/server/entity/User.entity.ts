@@ -18,7 +18,7 @@ pwd: string
 
                     
 @Column()
-usernick: string
+userNick: string
 = "";
 
                     

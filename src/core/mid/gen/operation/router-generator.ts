@@ -17,7 +17,7 @@ const unauthRouter = new KoaRouter();
         }
         Object.keys( oper.Api[fp] ).map( ( cp ) => {
             result += `
-${ fp.toLowerCase() }Router.post( '/${cp}', ${ fp }Controller.${ cp } ); 
+${ fp.toLowerCase() }Router.post( '/${cp[0].toLowerCase() + cp.slice( 1 )}', ${ fp }Controller.${ cp } ); 
             `;
         } );
     } );

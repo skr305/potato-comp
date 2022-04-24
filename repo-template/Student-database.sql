@@ -1,27 +1,18 @@
 
-drop database if exists `2022student`;
-create database `2022student`;
-use `2022student`;
+drop database if exists `123-b`;
+create database `123-b`;
+use `123-b`;
     
-create table `Student` (
-     
-    usernick varchar(300) not null ,
-      
-    pwd varchar(300) not null ,
-      
-    userID varchar(300) not null ,
-     
-    primary key ( userID  ) 
-    
-);
-        
 create table `User` (
      
-    userID varchar(300) not null ,
+    userID varchar(300) not null DEFAULT '' 
+    ,
       
-    pwd varchar(300) not null ,
+    pwd varchar(300) not null DEFAULT '' 
+    ,
       
-    usernick varchar(300) not null ,
+    userNick varchar(300) not null DEFAULT '' 
+    ,
      
     primary key ( userID  ) 
     

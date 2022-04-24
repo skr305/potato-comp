@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import * as VueRouter from 'vue-router';
 import routes from './router-path';
+import "scene-ui/style";
 
 const router = VueRouter.createRouter( {
     routes,

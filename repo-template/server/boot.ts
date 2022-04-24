@@ -8,6 +8,7 @@ import koaResponse from './middlewares/response';
 import { initDataSource } from './data-source';
 import chalk from "chalk";
 import PORT from "../src/base-port";
+import koaBodyJson from "./middlewares/body-json";
 
 // app config initialize
 const app = new Koa<any, AppContext>();
@@ -27,6 +28,7 @@ const boot = async () => {
     app.use( koaErrorHandler() );
     // app.use( koaAppToken() );
     app.use( koaResponse() );
+    app.use( koaBodyJson );
 
     // router
     const router = new koaRouter();

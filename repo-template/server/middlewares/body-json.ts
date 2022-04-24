@@ -4,8 +4,10 @@ import koaCompose from 'koa-compose';
 import koaBody from 'koa-body'
 const koaJson = (): Middleware<any, AppContext> => {
     return async ( ctx, next: Next ) => {
-        ctx.json = ctx.request.ctx.body || {};
+        // json is a alias of body.data
+        ctx.json = ctx.request.body.data || {};
         await next();
     }
 };
-export default koaCompose( [ koaJson(), koaBody() ] );
+const koaBodyJson = koaCompose( [ koaBody(),koaJson() ] );
+export default koaBodyJson;

@@ -83,7 +83,7 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
 
         await stdMkdir( ENTITY_OUTPUT_DIR );
         if( configBody.Model ) { 
-            await stdWriteFileCover( MODEL_SQL_OUTPATH, await modelGenerator( configBody.Model ) );
+            await stdWriteFileCover( MODEL_SQL_OUTPATH, await modelGenerator( configBody ) );
             // generate the entity
             await generateEntityToDir( configBody.Model, ENTITY_OUTPUT_DIR );
         }

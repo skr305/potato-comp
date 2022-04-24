@@ -52,5 +52,6 @@ export type MidConfigType = {
     Cover ?: boolean,
     BaseName: string,
     BaseUser: string,
-    BasePwd: string
+    BasePwd: string,
+    
 };

@@ -3,7 +3,7 @@ import AppContext from '../app-context';
 import ServerError from '../server-error';
 import errorLogger from '../error-logger';
 import standErrorMessage from '../standard-error-message';
-import { ServerErrorCode } from '../server-error';
+import { ServerErrorCode } from '../error-code';
 const koaErrorHandler = ():Middleware<any, AppContext> => {
     return async ( ctx, next ) => {
         try {

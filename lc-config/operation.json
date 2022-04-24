@@ -2,15 +2,8 @@
     "DevPort": 4000,
     "Api": {
         "Auth": {
-            "Login": {
-                "Params": "{userID: string, pwd: string}",
-                "Response": "{done: boolean}",
-                "Program": [
-                    "# $user => &User.FindOne|userID=$Params.userID ",
-                    " $Return = { done: $user && $user.pwd === $Params.pwd };"
-                ]
-            },
-            "DeleteUser": {
+            
+            "deleteUser": {
                 "Params": "{userID: string}",
                 "Response": "{done: boolean}",
                 "Program": [
@@ -18,12 +11,34 @@
                     " $Return = { done: true };"
                 ]
             },
-            "InsertUser": {
+            "insertUser": {
                 "Params": "{userID: string}",
                 "Response": "{done: boolean}",
                 "Program": [
                     "# &User.Insert|userID=$Params.userID ",
                     " $Return = { done: true };"
+                ]
+            }
+        },
+        "Unauth": {
+            "login": {
+                "Params": "{userID: string, pwd: string}",
+                "Response": "{done: boolean}",
+                "Program": [
+                    "# $user => &User.FindOne|userID=$Params.userID ",
+                    " $Return = { done: $user && $user.pwd === $Params.pwd };"
+                ]
+            },
+            "reg": {
+                "Params": "{userID: string, pwd: string, userNick: string}",
+                "Response": "{done: boolean}",
+                "Program": [
+                    "# $user => &User.FindOne|userID=$Params.userID ",
+                    " if( !user )",
+                    "# &User.Insert|userID=$Params.userID|userNick=$Params.userNick|pwd=$Params.pwd ",
+                    " $Return = { done: false };",
+                    "else",
+                    "$Return = { done: true }"
                 ]
             }
         }

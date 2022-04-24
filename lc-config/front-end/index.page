@@ -1,0 +1,21 @@
+<logic>
+
+    const onLogin = ( p: { userID: string, pwd: string } ) => #loginPured( p );
+    const onReg = ( p: { userID: string, pwd: string, userNick: string } ) => #regPured( p ); 
+    const onRegSuc = ( userID: string ) => {
+        __mes( {
+            type: "success",
+            text: "注册完成，跳转..."
+        } );
+        __pushR( __MainPath );
+        __sS( "__userID",  userID );
+    };
+</logic>
+<view>
+    <s-login-reg
+    :onLogin="onLogin"
+    :onReg="onReg"
+    :onRegSuc="onRegSuc"
+    >
+    </s-login-reg>
+</view>

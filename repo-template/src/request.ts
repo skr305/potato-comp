@@ -6,11 +6,15 @@ import TOKEN_SESSION_ITEM from './token-session-item';
 
 export const post = async <P, R>( options: { payload: P, url: string }  ):Promise< ServerError<R> > => {
     const { url, payload } = options;
-    return axios.create( { baseURL: BASE_URL } ).post< ServerError<R> >( url, {
+    return axios
+    .create( { 
+        baseURL: BASE_URL,
+     } )
+     .post< ServerError<R> >( url, {
         headers: {
             // application/x-www-form-urlencoded
             "Content-Type": "application/x-www-form-urlencoded",
-            "token": getSession( TOKEN_SESSION_ITEM ) as string
+            "token": getSession( TOKEN_SESSION_ITEM ) as string || "2333"
         },
         data: payload,
         transformRequest: [
@@ -19,6 +23,7 @@ export const post = async <P, R>( options: { payload: P, url: string }  ):Promis
                 for (let it in data) {
                 ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
                 }
+                console.log( ret );
                 return ret
             }
         ]

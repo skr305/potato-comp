@@ -1,3 +1,4 @@
+import { MidConfigType } from './../type';
 import { ModelConfigType, ModelOutposeSectionConfigType } from '../type';
 import { MODEL_DATABASE_KEY, DbAvailableSectionOutpose, MODEL_OUTPOSE_MAPS } from '../constants';
 // draw a sentence like username varchar( 200 ) not null
@@ -11,8 +12,16 @@ import { MODEL_DATABASE_KEY, DbAvailableSectionOutpose, MODEL_OUTPOSE_MAPS } fro
 const drawOutposeSentence = 
 ( key: string, outposeType: DbAvailableSectionOutpose, 
 isLast: boolean = false, notNull: boolean = true ):string => {
+    // gen default value in sql
+    const DEFAULT_VALUES: { [key in DbAvailableSectionOutpose] : string } = {
+        "longstring": "''",
+        "string": "''",
+        "int": "0",
+        "longint": "0"
+    }
     return ` 
-    ${key} ${ MODEL_OUTPOSE_MAPS[ outposeType ].dbType } ${ notNull ? "not null" : "" } ${ isLast ? "" : "," }
+    ${key} ${ MODEL_OUTPOSE_MAPS[ outposeType ].dbType } ${ notNull ? "not null" : "" } DEFAULT ${ DEFAULT_VALUES[ outposeType ] } 
+    ${ isLast ? "" : "," }
      `;
 }
 /**
@@ -30,14 +39,15 @@ const drawPrimayKeySentence = ( primarys: Array< string >, needComma: boolean = 
     primary key ( ${NESTED} ) ${ needComma ? "," : "" }
     `;
 }
-const modelGenerator = ( config: ModelConfigType ):string => {
-    const BASE_NAME = config[MODEL_DATABASE_KEY];
+const modelGenerator = ( config: MidConfigType ):string => {
+    const BASE_NAME = config.BaseName;
+
     let GENED = `
-${ config?.$Cover ? `drop database if exists \`${BASE_NAME}\`;` : "" }
+${ config?.Cover ? `drop database if exists \`${BASE_NAME}\`;` : "" }
 create database \`${BASE_NAME}\`;
 use \`${BASE_NAME}\`;
     `;
-    const tables = config.tables;
+    const tables = config?.Model?.tables;
     // no table to create
     if( !tables ) {
         return GENED;

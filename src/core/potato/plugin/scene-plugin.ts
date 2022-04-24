@@ -7,8 +7,10 @@ import { SButton, SDatetime, SInput,
     SDialog, SNumberInput, SPaymentInput ,
     SRadio, SSelect, SScrollbar, 
     SCheckbox, SCheckboxButton, SCheckboxGroup, 
-    SCard, STextarea ,SceneMessage, 
-    SceneLoading } from 'scene-ui';
+    SCard, STextarea ,SceneMessage as __mes, 
+    SceneLoading as __loading, SLoginReg, 
+    SChat, SPaper, SSearchPanel, 
+    SSessionList } from 'scene-ui';
 `] );        
     }
 };

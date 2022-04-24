@@ -1,14 +1,15 @@
 
 
 export enum ServerErrorCode {
-    Suc = 0,
-BadRequest = 1,
-Unknown = 999
+    BadRequest = 1,
+UNKNOWN = 999,
+NOT_FOUND = 998,
+OK = 0
 
 };
     
 
-export const ServerErroCodeMap = {"Suc":0,"BadRequest":1,"Unknown":999};
+export const ServerErroCodeMap = {"BadRequest":1,"UNKNOWN":999,"NOT_FOUND":998,"OK":0};
 
         
     

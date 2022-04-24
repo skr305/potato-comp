@@ -9,7 +9,7 @@ const importReg = /<import>([\s\S]*?)<\/import>/ig;
 const viewReg = /<view>([\s\S]*?)<\/view>/ig;
 const viewPotatoFunctionReg = /<#>([\s\S]*?)<\/#>/ig;
 const secReg = /#([_$A-Za-z]\w*)/g;
-const tplReg = /#([_$A-Za-z]\w*)\s*\(([\s\S]*)\)/g;
+const tplReg = /#([_$A-Za-z]\w*)\s*\(([\s\S]*?)\)/g;
 const getPageStringWithToken = ( 
     rawPage: string, 
     token: PotatoTokenCollectorStoreType, 

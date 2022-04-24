@@ -8,8 +8,9 @@ export const EncryUserID = ( userID: string ): string => userID;
 
 const koaAppToken = ():Middleware<any, AppContext> => {
     return async( ctx, next ) => {
-        if( ctx.token ) {
-            ctx.userID = resolveToken( ctx.token );
+        const token = ctx.request.body.headers.token;
+        if( token ) {
+            ctx.userID = resolveToken( token  );
         }
         await next();
     };

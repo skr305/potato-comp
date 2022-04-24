@@ -17,7 +17,7 @@ export type ${ cp }Params = ${ p };                `
 export type ${ cp }Response = ${ r };                `
             }
             result += `
-export const ${cp}ApiPath = '/api/${fp.toLowerCase()}/${ cp.toLowerCase() };'    `
+export const ${cp}ApiPath = '/api/${fp.toLowerCase()}/${ cp.toLowerCase() }';    `
         } );
     } );
     return result;

@@ -1,7 +1,7 @@
 import { Middleware } from 'koa';
 import AppContext from '../app-context';
 import ServerError from '../server-error';
-import { ServerErrorCode } from '../server-error';
+import { ServerErrorCode } from '../error-code';
 const koaResponse = ():Middleware<any, AppContext> => {
     return async ( ctx, next ) => {
         await next();
