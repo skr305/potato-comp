@@ -30,7 +30,9 @@ await dataSource.manager.insert( User, __inserting );
  
 ctx.body = { done: true };
 }
-else { ctx.body = { done: false } }
+else {
+ctx.body = { done: false }
+}
 
     await next();
 };
