@@ -1,3 +1,66 @@
+<import>
+import { onMounted, ref } from 'vue';
+</import>
+<logic>
+const { open: openL, close: closeL } = __loading.service({
+    target: 'body',
+    fullScreen: true,
+    text: 'loading...',
+    onClose: () => { }
+});
+const sesMeta = ref<{title:string, id: string}[]>();
+onMounted( async () => {
+    try {
+        openL();
+        const currentSess = await #getSessPured( {} );
+        if( !currentSess.push ) {
+             __mes( {
+                type: "error",
+                text: "页面元信息加载错误..."
+            } );
+        } else {
+            sesMeta.value = currentSess;
+        }
+    } catch {
+        __mes( {
+            type: "error",
+            text: "页面元信息加载错误..."
+        } );
+    } finally {
+        closeL();
+    }
+} );
+const onSearch = async ( toID: string ) => {
+    try {
+        openL();
+        const params = { toID };
+        const { done, chatID } = await #creSesPured( params );
+        if( !done ) {
+            __mes( {
+                type: "warning",
+                text: "此userID不存在"
+            } );
+        } else {
+            __mes( {
+                type: "success",
+                text: "添加会话成功"
+            } );
+            sesMeta.value.push( { title: chatID, id: chatID } );
+            console.log( sesMeta.value );
+        }
+    } catch {
+        __mes( {
+            type: "error",
+            text: "建立新会话或搜寻用户时错误"
+        } );
+    } finally {
+        closeL();
+    }
+}
+</logic>
 <view>
-    <div>233 Main</div>
+    <div>
+        <s-search-panel :onSearch="onSearch"></s-search-panel>
+        <s-session-list :metas="sesMeta"></s-session-list>
+    </div>
 </view>

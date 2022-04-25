@@ -14,7 +14,7 @@ export const post = async <P, R>( options: { payload: P, url: string }  ):Promis
         headers: {
             // application/x-www-form-urlencoded
             "Content-Type": "application/x-www-form-urlencoded",
-            "token": getSession( TOKEN_SESSION_ITEM ) as string || "2333"
+            "token": getSession( TOKEN_SESSION_ITEM ) as string || null
         },
         data: payload,
         transformRequest: [

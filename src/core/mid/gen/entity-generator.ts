@@ -34,10 +34,16 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
                 const sectionOutpose = tableData[ sectionKey ] as ModelOutposeSectionConfigType;
                 // if it's not a configType
                 if( sectionOutpose.isID === undefined ) {
+                    let outposeType =  sectionOutpose as any as DbAvailableSectionOutpose;
+                    let isID = false;
+                    if( outposeType[0] === "$" ) {
+                        isID = true;
+                        outposeType = outposeType.slice( 1 ) as DbAvailableSectionOutpose;
+                    }
                    nested += `
-${ COLUMN_ANO }
-${ sectionKey }: ${ MODEL_TYPES_MAPS[ tableData[ sectionKey ] as DbAvailableSectionOutpose ] }
-= ${ConstructotInitialValueMap[tableData[ sectionKey ] as DbAvailableSectionOutpose ]};\n
+${ isID ? PRIMARY_KEY_ANO : COLUMN_ANO}
+${ sectionKey }: ${ MODEL_TYPES_MAPS[  outposeType  ] }
+= ${ConstructotInitialValueMap[ outposeType ]};\n
                     `
                 
                 } else {

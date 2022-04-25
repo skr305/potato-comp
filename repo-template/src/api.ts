@@ -1,10 +1,16 @@
 
+export type getSessParams = {};                
+export type getSessResponse = {title:string, id: string}[];                
+export const getSessApiPath = '/api/auth/getSess';    
+export type creSesParams = {toID: string};                
+export type creSesResponse = { done: boolean, chatID: string };                
+export const creSesApiPath = '/api/auth/creSes';    
 export type deleteUserParams = {userID: string};                
 export type deleteUserResponse = {done: boolean};                
-export const deleteUserApiPath = '/api/auth/deleteuser';    
+export const deleteUserApiPath = '/api/auth/deleteUser';    
 export type insertUserParams = {userID: string};                
 export type insertUserResponse = {done: boolean};                
-export const insertUserApiPath = '/api/auth/insertuser';    
+export const insertUserApiPath = '/api/auth/insertUser';    
 export type loginParams = {userID: string, pwd: string};                
 export type loginResponse = {done: boolean};                
 export const loginApiPath = '/api/unauth/login';    

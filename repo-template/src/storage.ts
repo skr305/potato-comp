@@ -3,7 +3,7 @@ export const setStorage =  <T extends Object>( storage: Storage, in_sec:string, 
 }
 export const getStorage = <T extends Object>( storage: Storage ,sec: string ):T | null => {
     const entityStringfy = storage.getItem(sec);
-    if(entityStringfy) {
+    if(entityStringfy !== null && entityStringfy !== undefined) {
         return JSON.parse( entityStringfy );
     }
     return null;

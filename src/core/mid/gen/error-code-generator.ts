@@ -34,9 +34,12 @@ export const ServerErroCodeMap = ${ JSON.stringify( errorMap ) };\n
  * @returns gened file that be stringfy
  */
 const boot = ( errorMap: ErrorMapBlock, appName: string = "App" ):string => {
+    
     const DEFAULT_UNKNOWN_ERROR_TAG = "UNKNOWN";
     const DEFAULT_OK_ERROR_TAG = "OK";
     const DEFAULT_NOT_FOUND_TAG = "NOT_FOUND";
+    const DEFAULT_UNAUTH = "UNAUTH";
+
     // 必须有一个默认为Unknown的不可处理错误
     if( errorMap[ DEFAULT_UNKNOWN_ERROR_TAG ] === undefined ) {
         errorMap[ DEFAULT_UNKNOWN_ERROR_TAG ] = 999;
@@ -48,6 +51,10 @@ const boot = ( errorMap: ErrorMapBlock, appName: string = "App" ):string => {
     // 必须有一个默认的OK错误
     if( errorMap[ DEFAULT_OK_ERROR_TAG ] === undefined ) {
         errorMap[ DEFAULT_OK_ERROR_TAG ] = 0;
+    } 
+
+    if( errorMap[ DEFAULT_UNAUTH ] === undefined ) {
+        errorMap[ DEFAULT_UNAUTH ] = 997;
     }
     let result = `
 ${ drawErrorMapToEnum( errorMap, appName ) }

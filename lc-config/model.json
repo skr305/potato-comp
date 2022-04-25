@@ -17,6 +17,20 @@
                 },
                 "pwd": "string",
                 "userNick": "string"
+            },
+            "UserRel": {
+                "mID": "$string",
+                "sID": "$string",
+                "rel": "$int"
+            },
+            "Mes": {
+                "id": {
+                    "type":"string",
+                    "isID":true
+                },
+                "chatID": "string",
+                "content": "string",
+                "date": "string"
             }
         }
     },

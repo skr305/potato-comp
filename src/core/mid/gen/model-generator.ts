@@ -69,6 +69,7 @@ use \`${BASE_NAME}\`;
             let primaryID: Array<string> = [];
             const sections = Object.keys( meta );
             sections.map( ( secKey, idx ) => {
+
                 // judge that if the config body is a configObject
                 const secInfo = meta[ secKey ] as ModelOutposeSectionConfigType;
                 
@@ -84,9 +85,14 @@ use \`${BASE_NAME}\`;
                     // it's last, no need ","
                     NESTED += drawOutposeSentence( secKey, secInfo.type, isLast );
                 } else {
+                    let outposeType =  meta[ secKey ] as DbAvailableSectionOutpose;
+                    if( outposeType[0] === "$" ) {
+                        outposeType = outposeType.slice( 1 ) as DbAvailableSectionOutpose;
+                        primaryID.push( secKey );
+                    }
                     // sugar wrting compiler
                     const isLast = idx === sections.length - 1 && !primaryID.length;
-                    NESTED += drawOutposeSentence( secKey, meta[ secKey ] as DbAvailableSectionOutpose, isLast );
+                    NESTED += drawOutposeSentence( secKey, outposeType, isLast );
                 }
             } );
             // last should use primary key

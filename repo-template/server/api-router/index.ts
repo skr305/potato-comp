@@ -5,9 +5,13 @@ import UnauthController from '../unauth-controller';
 import koaAppToken from '../middlewares/app-token';
 
 const authRouter = new KoaRouter();
-authRouter.use( koaAppToken );
+authRouter.use( koaAppToken() );
 const unauthRouter = new KoaRouter();
     
+authRouter.post( '/getSess', AuthController.getSess ); 
+            
+authRouter.post( '/creSes', AuthController.creSes ); 
+            
 authRouter.post( '/deleteUser', AuthController.deleteUser ); 
             
 authRouter.post( '/insertUser', AuthController.insertUser ); 

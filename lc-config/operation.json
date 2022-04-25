@@ -2,7 +2,30 @@
     "DevPort": 4000,
     "Api": {
         "Auth": {
-            
+            "getSess": {
+                "Params": "{}",
+                "Response": "{title:string, id: string}[]",
+                "Program": [
+                    "# $cRels => &UserRel.Find|mID=$UserID|rel=1",
+                    " const { getBindingID } = ( await import('./binding-id') );",
+                    "const result = cRels.map( ( r:UserRel ) => { return { id: getBindingID( $UserID, r.sID ), title: getBindingID( $UserID, r.sID ) }  } )",
+                    "$Return = result"
+                ]
+            },
+            "creSes": {
+                "Params": "{toID: string}",
+                "Response": "{ done: boolean, chatID: string }",
+                "Program": [
+                    "const toID = $Params.toID",
+                    "# $toUser => &User.Find|userID=toID",
+                    " if( !toUser ) { $Return = { done: false, chatID: '' } } ",
+                    " else { ",
+                    "# &UserRel.Insert|mID=$UserID|sID=toID|rel=1",
+                    " const chatID = ( await import('./binding-id') ).getBindingID( toID, $UserID );",
+                    "$Return = { done: true, chatID }",
+                    "}"
+                ]
+            },
             "deleteUser": {
                 "Params": "{userID: string}",
                 "Response": "{done: boolean}",
@@ -26,7 +49,7 @@
                 "Response": "{done: boolean}",
                 "Program": [
                     "# $user => &User.FindOne|userID=$Params.userID ",
-                    " $Return = { done: $user && $user.pwd === $Params.pwd };"
+                    " $Return = { done: Boolean( user && user.pwd === $Params.pwd ) };"
                 ]
             },
             "reg": {
@@ -34,11 +57,11 @@
                 "Response": "{done: boolean}",
                 "Program": [
                     "# $user => &User.FindOne|userID=$Params.userID ",
-                    " if( !user )",
+                    " if( !user ) { ",
                     "# &User.Insert|userID=$Params.userID|userNick=$Params.userNick|pwd=$Params.pwd ",
-                    " $Return = { done: false };",
-                    "else",
-                    "$Return = { done: true }"
+                    " $Return = { done: true };",
+                    "}",
+                    "else { $Return = { done: false } }"
                 ]
             }
         }

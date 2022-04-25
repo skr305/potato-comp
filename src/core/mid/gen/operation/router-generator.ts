@@ -7,7 +7,7 @@ import UnauthController from '../unauth-controller';
 import koaAppToken from '../middlewares/app-token';
 
 const authRouter = new KoaRouter();
-authRouter.use( koaAppToken );
+authRouter.use( koaAppToken() );
 const unauthRouter = new KoaRouter();
     `;
 

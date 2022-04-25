@@ -10,6 +10,14 @@ import { SButton, SDatetime, SInput,
     SSessionList } from 'scene-ui';
 import { useRouter, useRoute } from 'vue-router';
 import { post } from '../request';
+import { getSessParams } from '../api';
+import { getSessResponse } from '../api';
+import { getSessApiPath } from '../api'
+
+import { creSesParams } from '../api';
+import { creSesResponse } from '../api';
+import { creSesApiPath } from '../api'
+
 import { deleteUserParams } from '../api';
 import { deleteUserResponse } from '../api';
 import { deleteUserApiPath } from '../api'
@@ -28,6 +36,9 @@ import { regApiPath } from '../api'
 
 import { setLocal as __sL, getLocal as __gL,
 setSession as __sS, getSession as __gS } from '../storage';
+
+    import TOKEN_SESSION_ITEM from '../token-session-item';
+
 
 
 
@@ -52,8 +63,19 @@ const __MainPath = "/main"
             type: "success",
             text: "注册完成，跳转..."
         } );
-        __pushR( __MainPath );
         __sS( "__userID",  userID );
+        __pushR( __MainPath );
+        
+    };
+    const onLoginSuc = ( userID: string ) => {
+        __mes( {
+            type: "success",
+            text: "登录完成，跳转..."
+        } );
+        __sS( "__userID",  userID );
+        console.log( __gS( TOKEN_SESSION_ITEM ) )
+        __pushR( __MainPath );
+        
     };
 
 </script>
@@ -63,6 +85,7 @@ const __MainPath = "/main"
     :onLogin="onLogin"
     :onReg="onReg"
     :onRegSuc="onRegSuc"
+    :onLoginSuc="onLoginSuc"
     >
     </s-login-reg>
 

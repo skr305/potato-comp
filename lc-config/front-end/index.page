@@ -1,3 +1,6 @@
+<import>
+    import TOKEN_SESSION_ITEM from '../token-session-item';
+</import>
 <logic>
 
     const onLogin = ( p: { userID: string, pwd: string } ) => #loginPured( p );
@@ -7,8 +10,19 @@
             type: "success",
             text: "注册完成，跳转..."
         } );
-        __pushR( __MainPath );
         __sS( "__userID",  userID );
+        __pushR( __MainPath );
+        
+    };
+    const onLoginSuc = ( userID: string ) => {
+        __mes( {
+            type: "success",
+            text: "登录完成，跳转..."
+        } );
+        __sS( "__userID",  userID );
+        console.log( __gS( TOKEN_SESSION_ITEM ) )
+        __pushR( __MainPath );
+        
     };
 </logic>
 <view>
@@ -16,6 +30,7 @@
     :onLogin="onLogin"
     :onReg="onReg"
     :onRegSuc="onRegSuc"
+    :onLoginSuc="onLoginSuc"
     >
     </s-login-reg>
 </view>

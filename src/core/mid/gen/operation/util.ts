@@ -117,8 +117,24 @@ export const MethodGenerator: { [ key in MethodType ]: ( params: string[] ) => s
     },
     "Map": ( params: string[] ) => {
         let arrName = params[0];
-        let fmtAttr = params.slice( 1 ).join( ", " );
-        return ` ${arrName}.map( val => { const { ${fmtAttr} } = val; return { ${ fmtAttr } }; } ); `
+        let fmtAttr = 
+        params.slice( 1 )
+        .map( ( s ) => {
+            const [  asName, origin ] = s.split( "=" );
+            if( !origin ) {
+                return s;
+            } else {
+                return `${origin} : ${ asName }`; 
+            }
+        } )
+        .join( ", " );
+
+        const returnExpression =
+        params.slice( 1 )
+        .map( ( s ) => ( s.split( "=" ) ) [0] )
+        .join( ", " );
+
+        return ` ${arrName}.map( val => { const { ${fmtAttr} } = val; return { ${ returnExpression } }; } ); `
     }
 }
 export const SpecificVarname: { [ key: string ]: string } = {
