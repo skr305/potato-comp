@@ -49,7 +49,7 @@ import { regApiPath } from '../api'
 import { setLocal as __sL, getLocal as __gL,
 setSession as __sS, getSession as __gS } from '../storage';
 
-    import TOKEN_SESSION_ITEM from '../token-session-item';
+import { onMounted, ref } from 'vue';
 
 
 
@@ -67,40 +67,47 @@ const __MainPath = "/main"
 
     
 
-    const onLogin = ( p: { userID: string, pwd: string } ) => post<loginParams, loginResponse>( { url: loginApiPath, payload: p } ).then( r => r.data );
+const chatID = __gS( '__curChatID' ) as string;
+const mes = ref<Array<{content: string, isMe: boolean}>>( [] );
+
+
+const { open: openL, close: closeL } = __loading.service({
+    target: 'body',
+    fullScreen: true,
+    text: 'loading...',
+    onClose: () => { }
+});
+onMounted( async () => {
+    try {
+        openL();
+        const historyMes = await post<getMesParams, getMesResponse>( { url: getMesApiPath, payload: { chatID } } ).then( r => r.data );
 ;
-    const onReg = ( p: { userID: string, pwd: string, userNick: string } ) => post<regParams, regResponse>( { url: regApiPath, payload: p } ).then( r => r.data );
-; 
-    const onRegSuc = ( userID: string ) => {
+        mes.value = historyMes;
+    } catch {
         __mes( {
-            type: "success",
-            text: "注册完成，跳转..."
+            type: "error",
+            text: "历史信息加载错误..."
         } );
-        __sS( "__userID",  userID );
-        __pushR( __MainPath );
-        
-    };
-    const onLoginSuc = ( userID: string ) => {
-        __mes( {
-            type: "success",
-            text: "登录完成，跳转..."
-        } );
-        __sS( "__userID",  userID );
-        console.log( __gS( TOKEN_SESSION_ITEM ) )
-        __pushR( __MainPath );
-        
-    };
+    } finally {
+        closeL();
+    }
+} );
+const send = ( p: { chatID: string, message: string } ) => {
+    const date = String( new Date().getTime() );
+    return post<sendMesParams, sendMesResponse>( { url: sendMesApiPath, payload: { ...p, date } } ).then( r => r.data );
+
+};
+const receive = ( p: { chatID: string } ) => {
+    return post<recvMesParams, recvMesResponse>( { url: recvMesApiPath, payload: p } ).then( r => r.data );
+;
+};
 
 </script>
 <template>
 
-    <s-login-reg
-    :onLogin="onLogin"
-    :onReg="onReg"
-    :onRegSuc="onRegSuc"
-    :onLoginSuc="onLoginSuc"
-    >
-    </s-login-reg>
+    <div>
+        <s-chat :chatID="chatID" :send="send" :receive="receive" ></s-chat>
+    </div>
 
 </template>
     

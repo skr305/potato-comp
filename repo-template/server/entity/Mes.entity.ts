@@ -13,6 +13,11 @@ id: string
 
 
 @Column()
+senderID: string
+= "";
+
+                    
+@Column()
 chatID: string
 = "";
 

@@ -28,6 +28,7 @@
                     "type":"string",
                     "isID":true
                 },
+                "senderID": "string",
                 "chatID": "string",
                 "content": "string",
                 "date": "string"

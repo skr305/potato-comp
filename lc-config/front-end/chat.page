@@ -1,0 +1,42 @@
+<import>
+import { onMounted, ref } from 'vue';
+</import>
+<logic>
+
+const chatID = __gS( 'curChatID' ) as string;
+const mes = ref<Array<{content: string, isMe: boolean}>>( [] );
+
+
+const { open: openL, close: closeL } = __loading.service({
+    target: 'body',
+    fullScreen: true,
+    text: 'loading...',
+    onClose: () => { }
+});
+onMounted( async () => {
+    try {
+        openL();
+        const historyMes = await #getMesPured( { chatID } );
+        mes.value = historyMes;
+    } catch {
+        __mes( {
+            type: "error",
+            text: "历史信息加载错误..."
+        } );
+    } finally {
+        closeL();
+    }
+} );
+const send = ( p: { chatID: string, message: string } ) => {
+    const date = String( new Date().getTime() );
+    return #sendMesPured( { ...p, date } )
+};
+const receive = ( p: { chatID: string } ) => {
+    return #recvMesPured( p );
+};
+</logic>
+<view>
+    <div>
+        <s-chat :chatID="chatID" :send="send" :receive="receive" ></s-chat>
+    </div>
+</view>

@@ -12,6 +12,12 @@ authRouter.post( '/getSess', AuthController.getSess );
             
 authRouter.post( '/creSes', AuthController.creSes ); 
             
+authRouter.post( '/getMes', AuthController.getMes ); 
+            
+authRouter.post( '/sendMes', AuthController.sendMes ); 
+            
+authRouter.post( '/recvMes', AuthController.recvMes ); 
+            
 authRouter.post( '/deleteUser', AuthController.deleteUser ); 
             
 authRouter.post( '/insertUser', AuthController.insertUser ); 

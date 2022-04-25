@@ -38,6 +38,9 @@ create table `Mes` (
     id varchar(300) not null DEFAULT '' 
     ,
       
+    senderID varchar(300) not null DEFAULT '' 
+    ,
+      
     chatID varchar(300) not null DEFAULT '' 
     ,
       

@@ -39,6 +39,46 @@ ctx.body = { done: true, chatID }
     await next();
 };
             
+public static async getMes ( ctx: AppContext, next: Next ) {
+    const { chatID } = ctx.json
+let allMes = await dataSource.manager.find( Mes, { where: { chatID: chatID,  }, order: { date: 'asc',  }  } );
+const res = allMes.map( m => { const isMe = ctx.userID === m.senderID; return { content: m.content, isMe } } )
+ctx.body = res
+
+    await next();
+};
+            
+public static async sendMes ( ctx: AppContext, next: Next ) {
+    const { chatID, message:content,date } = ctx.json
+const { pushMes } = await ( import('./mes-cache') );
+const { resolveBindingID } = await( import('./binding-id') );
+const pairIDs = resolveBindingID( chatID )
+const toID = pairIDs[0] === ctx.userID ? pairIDs[1] : pairIDs[0]
+pushMes( chatID, toID, content )
+ { 
+ const __inserting = new Mes ();
+__inserting.chatID = chatID;
+__inserting.date = date;
+__inserting.content = content;
+__inserting.id = GenID('mes');
+__inserting.senderID = ctx.userID;
+await dataSource.manager.insert( Mes, __inserting );
+ 
+ } 
+ 
+ctx.body = { done: true }
+
+    await next();
+};
+            
+public static async recvMes ( ctx: AppContext, next: Next ) {
+    const { chatID } = ctx.json
+const { getMesAndClear } = await ( import('./mes-cache') )
+ctx.body = getMesAndClear( chatID, ctx.userID ).map( m => { return { isMe: false, content: m } } )
+
+    await next();
+};
+            
 public static async deleteUser ( ctx: AppContext, next: Next ) {
     
         await dataSource

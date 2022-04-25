@@ -18,6 +18,18 @@ import { creSesParams } from '../api';
 import { creSesResponse } from '../api';
 import { creSesApiPath } from '../api'
 
+import { getMesParams } from '../api';
+import { getMesResponse } from '../api';
+import { getMesApiPath } from '../api'
+
+import { sendMesParams } from '../api';
+import { sendMesResponse } from '../api';
+import { sendMesApiPath } from '../api'
+
+import { recvMesParams } from '../api';
+import { recvMesResponse } from '../api';
+import { recvMesApiPath } from '../api'
+
 import { deleteUserParams } from '../api';
 import { deleteUserResponse } from '../api';
 import { deleteUserApiPath } from '../api'
@@ -49,6 +61,7 @@ const __router = useRouter();
 const __pushR = ( routername: string ) => __router.push( routername );
 const __replaceR = ( routername: string ) => __router.replace( { path: routername } ); 
 
+const __ChatPath = "/chat"
 const __IndexPath = "/"
 const __MainPath = "/main"
 
@@ -59,7 +72,7 @@ const { open: openL, close: closeL } = __loading.service({
     text: 'loading...',
     onClose: () => { }
 });
-const sesMeta = ref<{title:string, id: string}[]>();
+const sesMeta = ref<{title:string, id: string}[]>([]);
 onMounted( async () => {
     try {
         openL();
@@ -110,13 +123,17 @@ const onSearch = async ( toID: string ) => {
         closeL();
     }
 }
+const onTouch = ( id: string ) => {
+    __sS( '__curChatID', id );
+    __pushR( __ChatPath );
+}
 
 </script>
 <template>
 
     <div>
         <s-search-panel :onSearch="onSearch"></s-search-panel>
-        <s-session-list :metas="sesMeta"></s-session-list>
+        <s-session-list :metas="sesMeta" :onTouch="onTouch"></s-session-list>
     </div>
 
 </template>

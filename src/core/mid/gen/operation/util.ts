@@ -44,6 +44,12 @@ export type FIND_ORDER_VALUE
 "a" |
 "D" |
 "d";
+export const FIND_ORDER_MAP: { [key in FIND_ORDER_VALUE]: string } = {
+    "A": "'asc'",
+    "a": "'asc'",
+    "D": "'desc'",
+    "d": "'desc'",
+}
 /** deprecated 所有的oper/method 皆是以本身生成的字句作为返回  */
 // 如果是null 则无法赋值 应给出warning 且应说明赋值无效
 // 如果是string 即是固定值 则会在下一行生成一个新的赋值语句 被赋值即是string
@@ -62,7 +68,7 @@ export const OperationGenerator:{ [key in OPERATION_TYPE]: ( base: string, param
             const condi = splitPairSafely( pair );
             // for order use
             if( condi[0][0] === "*" ) {
-                orderNested += `${ condi[0].slice( 1 ) }: ${ condi[1] }, `;
+                orderNested += `${ condi[0].slice( 1 ) }: ${ FIND_ORDER_MAP[ condi[1].trim() as FIND_ORDER_VALUE ] }, `;
             } else {
                 whereNested += `${condi[0]}: ${condi[1]}, `;
             }

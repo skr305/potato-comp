@@ -26,6 +26,40 @@
                     "}"
                 ]
             },
+            "getMes": {
+                "Params": "{chatID: string}",
+                "Response": "{ isMe: boolean, content: string }[]",
+                "Program": [
+                    "const { chatID } = $Params",
+                    "# $allMes => &Mes.Find|chatID=chatID|*date=A",
+                    "const res = allMes.map( m => { const isMe = $UserID === m.senderID; return { content: m.content, isMe } } ) ",
+                    "$Return = res"
+                ]
+            },
+            "sendMes": {
+                "Params": "{chatID: string, message: string, date: string}",
+                "Response": "{ done: boolean }",
+                "Program": [
+                    "const { chatID, message:content,date } = $Params",
+                    " const { pushMes } = await ( import('./mes-cache') ); ",
+                    " const { resolveBindingID } = await( import('./binding-id') );  ",
+                    " const pairIDs = resolveBindingID( chatID )   ",
+                    " const toID = pairIDs[0] === $UserID ? pairIDs[1] : pairIDs[0] ",
+                    " pushMes( chatID, toID, content ) ",
+                    "# &Mes.Insert|chatID=chatID|date=date|content=content|id=GenID('mes')|senderID=$UserID",
+                    "$Return = { done: true }"
+                ]
+            },
+
+            "recvMes": {
+                "Params": "{ chatID: string }",
+                "Response": "{ isMe: boolean, content: string }[]",
+                "Program": [
+                    "const { chatID } = $Params",
+                    "const { getMesAndClear } = await ( import('./mes-cache') )",
+                    "$Return = getMesAndClear( chatID, $UserID ).map( m => { return { isMe: false, content: m } } ) "
+                ]
+            },
             "deleteUser": {
                 "Params": "{userID: string}",
                 "Response": "{done: boolean}",
@@ -57,11 +91,13 @@
                 "Response": "{done: boolean}",
                 "Program": [
                     "# $user => &User.FindOne|userID=$Params.userID ",
-                    " if( !user ) { ",
+                    " if( !user ) {",
                     "# &User.Insert|userID=$Params.userID|userNick=$Params.userNick|pwd=$Params.pwd ",
                     " $Return = { done: true };",
                     "}",
-                    "else { $Return = { done: false } }"
+                    "else {",
+                    "$Return = { done: false }",
+                    "}"
                 ]
             }
         }
