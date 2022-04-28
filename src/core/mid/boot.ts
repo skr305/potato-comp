@@ -70,6 +70,7 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
         const APP_NAME = configBody.AppName;
         // write the model in place
         const MODEL_SQL_OUTPATH = `${OUT_DIR}/${APP_NAME}-database.sql`;
+        const VAR_MODEL_SQL_OUTPATH = `${OUT_DIR}/server/cover-sql.ts`;
         const ERROR_CODE_OUTPATH = `${OUT_DIR}/server/error-code.ts`;
         const ENTITY_OUTPUT_DIR = `${OUT_DIR}/server/entity`;
         const DB_OPTION_OUTPUT_PATH = `${OUT_DIR}/server/data-source-option.ts`;
@@ -83,9 +84,17 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
 
         await stdMkdir( ENTITY_OUTPUT_DIR );
         if( configBody.Model ) { 
-            await stdWriteFileCover( MODEL_SQL_OUTPATH, await modelGenerator( configBody ) );
+            {
+                const ModelSQL = await modelGenerator( configBody );
+                const VarCoverModelSQL = ` export const coverSQL =  
+                \`${ ( await modelGenerator( configBody ) ).replace( /`/g, '\\`' ) }\` `;
+                await stdWriteFileCover( MODEL_SQL_OUTPATH, await modelGenerator( configBody ) );
+                await stdWriteFileCover( VAR_MODEL_SQL_OUTPATH, VarCoverModelSQL );
+            }
+           
             // generate the entity
             await generateEntityToDir( configBody.Model, ENTITY_OUTPUT_DIR );
+            
         }
         if( configBody.ErrorCode ) {
             await stdWriteFileCover( ERROR_CODE_OUTPATH, await errorCodeGenerator( configBody.ErrorCode ) );

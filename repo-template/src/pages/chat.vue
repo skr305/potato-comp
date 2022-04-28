@@ -67,7 +67,7 @@ const __MainPath = "/main"
 
     
 
-const chatID = __gS( '__curChatID' ) as string;
+const chatID = __gS( 'curChatID' ) as string;
 const mes = ref<Array<{content: string, isMe: boolean}>>( [] );
 
 

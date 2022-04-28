@@ -97,6 +97,17 @@ onMounted( async () => {
 } );
 const onSearch = async ( toID: string ) => {
     try {
+
+        for( let t of sesMeta.value ) {
+            if( t.title === toID ) {
+                 __mes( {
+                    type: "warning",
+                    text: "已经与该用户建立会话"
+                } );
+                return;
+            }
+        }
+
         openL();
         const params = { toID };
         const { done, chatID } = await post<creSesParams, creSesResponse>( { url: creSesApiPath, payload: params } ).then( r => r.data );

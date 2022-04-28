@@ -1,8 +1,9 @@
-drop database if exists `123-b`;
-create database `123-b`;
-use `123-b`;
+ export const coverSQL =  
+                `drop database if exists \`123-b\`;
+create database \`123-b\`;
+use \`123-b\`;
     
-create table `User` (
+create table \`User\` (
      
     userID varchar(300) not null DEFAULT '' 
     ,
@@ -17,7 +18,7 @@ create table `User` (
     
 );
         
-create table `UserRel` (
+create table \`UserRel\` (
      
     mID varchar(300) not null DEFAULT '' 
     ,
@@ -32,7 +33,7 @@ create table `UserRel` (
     
 );
         
-create table `Mes` (
+create table \`Mes\` (
      
     id varchar(300) not null DEFAULT '' 
     ,
@@ -52,4 +53,4 @@ create table `Mes` (
     primary key ( id  ) 
     
 );
-        
+        ` 

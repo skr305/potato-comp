@@ -18,8 +18,9 @@ export const MODEL_INT_NAME = "int";
 // depre
 // Model中的db类型中介声明类型
 // long string
+const LONG_STRING_VARCAHR_LENGTH = 65535;
 export const LONG_STRING_OUTPOSE:DbOutposeTypeMidType = {
-    dbType: `text`,
+    dbType: `varchar(${LONG_STRING_VARCAHR_LENGTH})`,
     outposeName: MODEL_LONG_STRING_NAME
 };
 // string

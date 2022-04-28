@@ -8,7 +8,7 @@
                 "Program": [
                     "# $cRels => &UserRel.Find|mID=$UserID|rel=1",
                     " const { getBindingID } = ( await import('./binding-id') );",
-                    "const result = cRels.map( ( r:UserRel ) => { return { id: getBindingID( $UserID, r.sID ), title: getBindingID( $UserID, r.sID ) }  } )",
+                    "const result = cRels.map( ( r:UserRel ) => { return { id: getBindingID( $UserID, r.sID ), title: r.sID }  } )",
                     "$Return = result"
                 ]
             },
