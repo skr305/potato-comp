@@ -21,7 +21,7 @@ const RequestPluginGenerator
                     const paramsString = args.trim();
                     const paramsTypeString =`${ p }Params`;
                     const reponseTypeString =`${ p }Response`;
-                    return `post<${paramsTypeString}, ${reponseTypeString}>( { url: ${apipath}, payload: ${paramsString} } ).then( r => r.data );\n`
+                    return `post<${paramsTypeString}, ${reponseTypeString}>( { url: ${apipath}, payload: ${paramsString} } ).then( r => r.data )\n`
                 },
                 []
             );
