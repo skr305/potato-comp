@@ -10,7 +10,7 @@
     "ini": "npm i && cd repo-template && npm i",
     "d-s": "npm run rd && cd repo-template && npm run run-s ",
 
-    "def": "cd repo-template && npm run run-s & vite"
+    "def": "cd repo-template && vite | echo hello | npm run run-s"
   },
   "dependencies": {
     "@types/moment": "^2.13.0",
