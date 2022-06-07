@@ -50,19 +50,19 @@ ctx.body = res
             
 public static async sendMes ( ctx: AppContext, next: Next ) {
     const { chatID, message:content,date } = ctx.json
-    const { pushMes } = await ( import('./mes-cache') );
-    const { resolveBindingID } = await( import('./binding-id') );
-    const pairIDs = resolveBindingID( chatID )
-    const toID = pairIDs[0] === ctx.userID ? pairIDs[1] : pairIDs[0]
-    pushMes( chatID, toID, content )
-    { 
-    const __inserting = new Mes ();
-    __inserting.chatID = chatID;
-    __inserting.date = date;
-    __inserting.content = content;
-    __inserting.id = GenID('mes');
-    __inserting.senderID = ctx.userID;
-    await dataSource.manager.insert( Mes, __inserting );
+const { pushMes } = await ( import('./mes-cache') );
+const { resolveBindingID } = await( import('./binding-id') );
+const pairIDs = resolveBindingID( chatID )
+const toID = pairIDs[0] === ctx.userID ? pairIDs[1] : pairIDs[0]
+pushMes( chatID, toID, content )
+ { 
+ const __inserting = new Mes ();
+__inserting.chatID = chatID;
+__inserting.date = date;
+__inserting.content = content;
+__inserting.id = GenID('mes');
+__inserting.senderID = ctx.userID;
+await dataSource.manager.insert( Mes, __inserting );
  
  } 
  

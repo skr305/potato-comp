@@ -144,6 +144,7 @@ const onTouch = ( id: string ) => {
 
     <div>
         <s-search-panel :onSearch="onSearch"></s-search-panel>
+        <h3> 联系人 </h3>
         <s-session-list :metas="sesMeta" :onTouch="onTouch"></s-session-list>
     </div>
 

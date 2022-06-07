@@ -69,8 +69,8 @@ const __MainPath = "/main"
 
 const chatID = __gS( 'curChatID' ) as string;
 const mes = ref<Array<{content: string, isMe: boolean}>>( [] );
-
-
+const inInit = ref( true )
+const historyDone = ref( false )
 const { open: openL, close: closeL } = __loading.service({
     target: 'body',
     fullScreen: true,
@@ -89,6 +89,7 @@ onMounted( async () => {
             text: "历史信息加载错误..."
         } );
     } finally {
+        historyDone.value = true
         closeL();
     }
 } );
@@ -98,6 +99,12 @@ const send = ( p: { chatID: string, message: string } ) => {
 
 };
 const receive = ( p: { chatID: string } ) => {
+    if( inInit.value ) {
+        if( historyDone.value ) {
+            inInit.value = false
+        }
+        return new Promise( r => { r( mes.value ) } )
+    }
     return post<recvMesParams, recvMesResponse>( { url: recvMesApiPath, payload: p } ).then( r => r.data );
 ;
 };

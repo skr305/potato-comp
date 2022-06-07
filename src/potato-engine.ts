@@ -1,3 +1,4 @@
+import { startOnSec, endOnSec } from './util/time';
 import { PotatoPluginType } from './core/potato/plugin/index';
 import { StringGeneratorWithNoArgs } from './alias-type';
 import chalk from 'chalk';
@@ -22,9 +23,12 @@ const potatoEngine = async ( options : PotatoEngineBootOptions = {} ) => {
 
     // col the token
     exposeConfig.initExpose();
+    console.log( chalk.greenBright( 'expose config hooks mounted...' ) )
     // 调用默认plugin
     scenePlugin( defPRI, defSEC, defTPL )();
     routerPlugin(  defPRI, defSEC, defTPL  )();
+    console.log( chalk.cyan( 'loading scene-plugin and router-plugin' ) )
+
     if( options.potatoPlugins !== undefined && options.potatoPlugins.length ) {
         options
         .potatoPlugins
@@ -46,9 +50,12 @@ const potatoEngine = async ( options : PotatoEngineBootOptions = {} ) => {
         } )
         const allPurePagenames = pagenames.map( pn => pn.slice( 0, pn.length - 5 ) );
         for( let pn of pagenames ) {
+            
             const purePagename = pn.slice( 0, pn.length - 5 );
             // read <app>.page
             const raw = await stdReadFile( `${INPUT_DIR_PATH}/${pn}`) as string;
+            console.log( chalk.blueBright( `transfer ${ pn } to ${ purePagename }.vue` ) )
+            startOnSec()
             // write to <app>.vue
             await writeToPage(
                  `${OUTPUT_DIR_PATH}/${ purePagename }.vue`,
@@ -59,7 +66,9 @@ const potatoEngine = async ( options : PotatoEngineBootOptions = {} ) => {
                       ...extraInnerPlugins
                   ] 
             );
+            console.log( chalk.blueBright( `transfer ${ pn } done in ${ endOnSec() } ms` ) )
         }
+        console.log( chalk.bold( chalk.cyanBright( ` loading page router: ${ allPurePagenames } ` ) ) )
         // write to router config
         await writeRouterToPaths( 
             ROUTER_OUTPUT_PATH, 

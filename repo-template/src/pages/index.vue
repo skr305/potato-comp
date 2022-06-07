@@ -83,6 +83,14 @@ const __MainPath = "/main"
     const onLoginSuc = ( userID: string ) => {
         __mes( {
             type: "success",
+            text: "欢迎您"
+        } )
+        __mes( {
+            type: "success",
+            text: "enjoy life"
+        } )
+        __mes( {
+            type: "success",
             text: "登录完成，跳转..."
         } );
         __sS( "__userID",  userID );

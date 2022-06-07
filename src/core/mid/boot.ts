@@ -1,3 +1,4 @@
+import { startOnSec, endOnSec } from './../../util/time';
 import BaseError from '../error/base-error';
 import jsonReader from '../../util/json-reader';
 import { MidConfigType, OperationBlock } from './type';
@@ -12,6 +13,7 @@ import apiGenerator from './gen/operation/api-generator';
 import routerGenerator from './gen/operation/router-generator';
 import getEntityList from './gen/get-entity-list';
 import LOW_C_ENV from '../../env';
+import chalk from 'chalk';
 
 export enum MidGeneratorStatus {
     SUC = 0,
@@ -51,6 +53,8 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
         // make dist output dir
         const configBody = await jsonReader( path.model ) as MidConfigType;
         const operationBody = await jsonReader( path.operation ) as OperationBlock;
+        console.log( chalk.cyan( "fetch config-body" ) )
+        console.log( chalk.cyan( "fetch operation-body" ) )
         operationNameSets = ( ( function() {
             const sets = {
                 "Auth": [] as string[],
@@ -88,8 +92,11 @@ export const BootGen = async ( path: BootGenCompositionPathType, options: MidGOp
                 const ModelSQL = await modelGenerator( configBody );
                 const VarCoverModelSQL = ` export const coverSQL =  
                 \`${ ( await modelGenerator( configBody ) ).replace( /`/g, '\\`' ) }\` `;
+                console.log( chalk.cyan( `gened based meta: ${ ModelSQL.slice( 0, 25 ) } ...` ) )
                 await stdWriteFileCover( MODEL_SQL_OUTPATH, await modelGenerator( configBody ) );
                 await stdWriteFileCover( VAR_MODEL_SQL_OUTPATH, VarCoverModelSQL );
+                startOnSec()
+                console.log( `write model-entity done ${endOnSec()} s` )
             }
            
             // generate the entity
